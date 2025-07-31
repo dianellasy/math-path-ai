@@ -1,0 +1,134 @@
+{
+  "alex.martinez@example.com": {
+    "person": {
+      "person_id": "2c1fe9c7-2f39-4b4e-9c67-9c6c1b2a6b11",
+      "first_name": "Alex",
+      "last_name": "Martinez",
+      "email": "alex.martinez@example.com",
+      "phone_number": "555-123-4567",
+      "date_of_birth": "2006-04-12"
+    },
+    "applications": [
+      {
+        "application_id": "a1b2c3d4-1111-2222-3333-444455556666",
+        "term_applied": "Fall 2025",
+        "program": "Computer Science",
+        "plan": "BS Computer Science",
+        "status": "Admitted",
+        "submission_date": "2025-01-15",
+        "decision_date": "2025-03-10"
+      }
+    ],
+    "documents": [
+      {
+        "document_id": "d-1001",
+        "application_id": "a1b2c3d4-1111-2222-3333-444455556666",
+        "type": "Transcript",
+        "file_path": "s3://bucket/transcripts/alex.pdf",
+        "upload_date": "2025-05-20"
+      }
+    ],
+    "events": [
+      {
+        "event_id": "e-mape-inperson-2025-wow",
+        "title": "MAPE In-Person",
+        "date": "2025-09-14",
+        "location": "Campus Testing Center",
+        "description": "Math Placement Exam during Week of Welcome"
+      }
+    ],
+    "event_attendance": [
+      {
+        "attendance_id": "att-001",
+        "event_id": "e-mape-inperson-2025-wow",
+        "person_id": "2c1fe9c7-2f39-4b4e-9c67-9c6c1b2a6b11",
+        "attended": false
+      }
+    ],
+    "interactions": [
+      {
+        "interaction_id": "i-1001",
+        "type": "email",
+        "description": "Asked about transcript deadline",
+        "interaction_date": "2025-07-15",
+        "staff_id": "s-2001"
+      }
+    ]
+  },
+
+  "jordan.lee@example.com": {
+    "person": {
+      "person_id": "b3d3f833-6ef9-4b34-929c-50b85a44bd2e",
+      "first_name": "Jordan",
+      "last_name": "Lee",
+      "email": "jordan.lee@example.com"
+    },
+    "applications": [
+      {
+        "application_id": "app-2001",
+        "term_applied": "Fall 2025",
+        "program": "Mechanical Engineering",
+        "plan": "BS Mechanical Engineering",
+        "status": "Admitted",
+        "submission_date": "2025-01-18",
+        "decision_date": "2025-03-12"
+      }
+    ],
+    "documents": [
+      {
+        "document_id": "doc-2001",
+        "application_id": "app-2001",
+        "type": "SAT",
+        "file_path": "s3://bucket/tests/jordan-sat.pdf",
+        "upload_date": "2025-05-05"
+      },
+      {
+        "document_id": "doc-2002",
+        "application_id": "app-2001",
+        "type": "Transcript",
+        "file_path": "s3://bucket/transcripts/jordan.pdf",
+        "upload_date": "2025-05-18"
+      }
+    ],
+    "events": [],
+    "event_attendance": [],
+    "interactions": []
+  },
+
+  "nina.wu@example.com": {
+    "person": {
+      "person_id": "a89b829d-86d1-4a48-94e7-0eaf2a1edc73",
+      "first_name": "Nina",
+      "last_name": "Wu",
+      "email": "nina.wu@example.com"
+    },
+    "applications": [
+      {
+        "application_id": "app-3001",
+        "term_applied": "Fall 2025",
+        "program": "Statistics",
+        "plan": "BS Statistics",
+        "status": "Admitted"
+      }
+    ],
+    "documents": [],
+    "events": [
+      {
+        "event_id": "e-mape-online-2025",
+        "title": "MAPE Online",
+        "date": "2025-08-25",
+        "location": "Online",
+        "description": "Remote Math Placement Exam"
+      }
+    ],
+    "event_attendance": [
+      {
+        "attendance_id": "att-3001",
+        "event_id": "e-mape-online-2025",
+        "person_id": "a89b829d-86d1-4a48-94e7-0eaf2a1edc73",
+        "attended": false
+      }
+    ],
+    "interactions": []
+  }
+} 

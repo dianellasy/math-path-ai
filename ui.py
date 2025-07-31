@@ -3,7 +3,26 @@ import re
 import time
 import base64
 import streamlit as st
-from chatbot import query_bedrock
+from backend import (
+    load_students, 
+    validate_environment, 
+    authenticate_student, 
+    process_user_question
+)
+
+# Validate environment first
+try:
+    validate_environment()
+except Exception as e:
+    st.error(str(e))
+    st.stop()
+
+# Load student database
+try:
+    STUDENT_DB = load_students()
+except Exception as e:
+    st.error(str(e))
+    st.stop()
 
 def img_to_base64(path: str) -> str:
     with open(path, "rb") as f:
@@ -17,6 +36,30 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 if "typing" not in st.session_state:
     st.session_state.typing = False
+
+# -----------------------------
+# Identity: simple email sign-in
+# -----------------------------
+if "student_email" not in st.session_state:
+    with st.form("email_form"):
+        email_in = st.text_input("Enter your Cal Poly email to begin:")
+        submitted = st.form_submit_button("Continue")
+        if submitted and email_in:
+            st.session_state.student_email = email_in.strip().lower()
+    st.stop()
+
+email = st.session_state.student_email
+student, error = authenticate_student(email, STUDENT_DB)
+if error:
+    st.warning(error)
+    with st.expander("Available test emails"):
+        st.json(list(STUDENT_DB.keys()))
+    if st.button("Use a different email"):
+        del st.session_state["student_email"]
+        st.rerun()
+    st.stop()
+
+st.caption(f"Signed in as: {email}")
 
 # --- CSS: reset, centered header, chat, footer ---
 st.markdown("""
@@ -125,7 +168,7 @@ def handle_submit():
     st.session_state.messages.append({"role": "user", "content": text})
     st.session_state.user_input = ""
     with st.spinner("Thinking..."):
-        reply = query_bedrock(text)
+        reply = process_user_question(student, text)
     st.session_state.messages.append({"role": "assistant", "content": reply})
     st.session_state.typing = True
 
