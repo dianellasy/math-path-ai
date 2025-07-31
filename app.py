@@ -21,7 +21,7 @@ def set_bg_local(image_path):
         unsafe_allow_html=True,
     )
 
-set_bg_local("background.jpg")
+set_bg_local("background.png")
 
 
 # 1. Load API key
@@ -45,26 +45,28 @@ body {
     background-color: white;
 }
 .header {
-  position: relative;
-  height: 60px;       /* adjust as needed */
-  background-color: white;
-  margin-bottom: 20px;
-}
-.header h1 {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  font-size: 2.5rem;
-}
-.header img {
-  position: absolute;
-  right: 20px;        /* space from the right edge */
-  top: 50%;
-  transform: translateY(-50%);
-  height: 50px;
-}
+        position: relative;
+        text-align: center;
+        padding: 1rem 0;
+        background-color: #154734;
+        margin-bottom: 20px;
+      }
+      .header h1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        font-size: 2.5rem;
+        color: #FFD700;   
+      }
+      .header img {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 50px;
+      }
 .chat-container {
     padding-bottom: 80px;  /* leave room for input bar */
 }
