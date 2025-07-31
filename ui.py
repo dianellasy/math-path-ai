@@ -1,86 +1,186 @@
-import streamlit as st
+import os
+import re
+import time
 import base64
+import streamlit as st
 from chatbot import query_bedrock
 
-# Load image
 def img_to_base64(path: str) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
-logo_b64 = img_to_base64("calpoly-logo.png")
-
 # Page setup
 st.set_page_config(page_title="MathPath AI", layout="centered")
 
-# CSS
+# Initialize session state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "typing" not in st.session_state:
+    st.session_state.typing = False
+
+# --- CSS: reset, centered header, chat, footer ---
 st.markdown("""
 <style>
-  .appview-container .main { padding-top: 80px; }
-  .page-title { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-    width: 60%; text-align: center; color: white; font-size: 2.5rem; font-weight: bold; z-index: 1001; }
-  .input-bar { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);
-    width: 60%; z-index: 1001; }
-  .input-bar input { width: 100% !important; }
-  .chat-container { display: flex; flex-direction: column; gap: 8px; padding: 12px;
-    max-height: 60vh; overflow-y: auto; margin-bottom: 100px; }
-  .chat-message { max-width: 70%; padding: 10px 14px; border-radius: 16px; line-height: 1.4; }
-  .chat-message.user { background-color: #dcf8c6; align-self: flex-end; }
-  .chat-message.assistant { background-color: #f1f0f0; align-self: flex-start; }
-  .footer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    width: 80%; text-align: center; color: #DDDDDD; font-size: 0.8rem; z-index: 1001; }
-  body, .stApp { background-color: #154734 !important; }
+  html, body, .stApp {
+    height: 100%; margin: 0; padding: 0;
+  }
+  .appview-container .main {
+    padding-top: 20px;
+  }
+
+  /* Centered Header */
+  .header-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .header-container img {
+    max-height: 120px;
+    margin-bottom: 0.5rem;
+  }
+  .header-container h1 {
+    color: black;
+    font-size: 2.5rem;
+    margin: 0.25rem 0;
+  }
+  .header-container p {
+    color: black;
+    font-size: 1rem;
+    margin: 0.25rem 0;
+  }
+
+  /* Chat Area */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 80px;
+  }
+  .chat-message {
+    max-width: 60%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin: 4px 0;
+  }
+  .chat-message.user {
+    background: #dcf8c6;
+    margin-left: auto;
+  }
+  .chat-message.assistant {
+    background: #f1f0f0;
+    margin-right: auto;
+  }
+
+  /* Hide Streamlit's "Image not available" */
+  .streamlit-expanderHeader .css-1t0sjvy img + div {
+    display: none;
+  }
+
+  /* Sticky Footer */
+  .footer {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    background-color: rgba(21,71,52,0.9);
+    color: #DDDDDD;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 0.8rem;
+    z-index: 1001;
+  }
 </style>
 """, unsafe_allow_html=True)
 
-# Logo
-st.markdown(f"""
-<div class="banner">
-  <img src="data:image/png;base64,{logo_b64}" alt="Logo">
+# --- Header: logo, title, subtitle in one block ---
+logo_path = "calpoly-logo.png"
+logo_html = ""
+if os.path.exists(logo_path):
+    b64 = img_to_base64(logo_path)
+    logo_html = f'<img src="data:image/png;base64,{b64}" alt="Cal Poly Logo" />'
+
+header_html = f"""
+<div class="header-container">
+  {logo_html}
+  <h1>MathPath AI</h1>
+  <p>Your Personal Guide to Cal Poly's Math Placement System</p>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(header_html, unsafe_allow_html=True)
 
-# Title
-st.markdown('<div class="page-title">MathPath AI</div>', unsafe_allow_html=True)
-
-# Session state for chat
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Message handler
+# --- Submission handler ---
 def handle_submit():
-    user_input = st.session_state.user_input.strip()
-    if not user_input:
+    text = st.session_state.user_input.strip()
+    if not text:
         return
-    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.messages.append({"role": "user", "content": text})
     st.session_state.user_input = ""
-
     with st.spinner("Thinking..."):
-        reply = query_bedrock(user_input)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+        reply = query_bedrock(text)
+    st.session_state.messages.append({"role": "assistant", "content": reply})
+    st.session_state.typing = True
 
-# Chat display
+# Strip out any <Image> placeholders
+def clean(text: str) -> str:
+    return re.sub(r'<Image[^>]*\/>', '', text).strip()
+
+# --- Chat display ---
 with st.container():
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    for msg in st.session_state.messages:
-        cls = "user" if msg["role"] == "user" else "assistant"
-        st.markdown(f'<div class="chat-message {cls}">{msg["content"]}</div>', unsafe_allow_html=True)
+    msgs = st.session_state.messages
+
+    if st.session_state.typing and msgs:
+        # Render all but last
+        for msg in msgs[:-1]:
+            c = clean(msg["content"])
+            if c:
+                cls = "user" if msg["role"]=="user" else "assistant"
+                st.markdown(f'<div class="chat-message {cls}">{c}</div>', unsafe_allow_html=True)
+
+        # Typing effect on last message
+        placeholder = st.empty()
+        full_text = clean(msgs[-1]["content"])
+        built = ""
+        speed = 0.01
+        for ch in full_text:
+            built += ch
+            placeholder.markdown(
+                f'<div class="chat-message assistant">{built}</div>',
+                unsafe_allow_html=True
+            )
+            time.sleep(speed)
+        st.session_state.typing = False
+
+    else:
+        # Render all messages
+        for msg in msgs:
+            c = clean(msg["content"])
+            if c:
+                cls = "user" if msg["role"]=="user" else "assistant"
+                st.markdown(f'<div class="chat-message {cls}">{c}</div>', unsafe_allow_html=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer
+# --- Input bar ---
+st.text_input(
+    label="Ask a question",
+    key="user_input",
+    placeholder="Type here…",
+    on_change=handle_submit,
+    label_visibility="hidden"
+)
+
+# --- Footer ---
 st.markdown("""
 <div class="footer">
   This chatbox is powered by AI for guidance and recommendations. Responses may contain errors, so always verify with an advisor.
 </div>
 """, unsafe_allow_html=True)
-
-# Input bar
-with st.container():
-    st.markdown('<div class="input-bar">', unsafe_allow_html=True)
-    st.text_input(
-        label="Ask a question",
-        key="user_input",
-        placeholder="Type here…",
-        on_change=handle_submit,
-        label_visibility="hidden"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
