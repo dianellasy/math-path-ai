@@ -39,7 +39,8 @@ st.markdown("""
     text-align: center;
   }
   .header-container img {
-    max-height: 120px;
+    max-height: 60px;
+    width: auto;
     margin-bottom: 0.5rem;
   }
   .header-container h1 {
