@@ -31,7 +31,7 @@ st.set_page_config(
 )
 
 # ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 4. Custom CSS (banner + title + background + padding + input‐bar offset) │
+# │ 4. Custom CSS (banner + title + background + padding + input-bar offset) │
 # └────────────────────────────────────────────────────────────────────────────┘
 st.markdown("""
 <style>
@@ -54,12 +54,13 @@ st.markdown("""
     margin-right: 20px;
   }
 
-  /* new page title under banner */
+  /* page title fixed above the input bar, centered */
   .page-title {
     position: fixed;
-    bottom: 545px;           
-    left: 0;
-    width: 100%;
+    bottom: 500px;           /* 60px bar height + 20px offset + 10px gap */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
     text-align: center;
     color: white;
     font-size: 2.5rem;
@@ -68,7 +69,18 @@ st.markdown("""
     z-index: 1001;
   }
 
-
+  /* footer text fixed above the input bar */
+  .footer {
+    position: fixed;
+    bottom: 60px;           /* 20px bar offset + ~40px footer height */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    text-align: center;
+    color: #DDDDDD;
+    font-size: 0.8rem;
+    z-index: 1001;
+  }
 
   /* global background */
   body, .stApp {
@@ -96,16 +108,20 @@ st.markdown("""
     margin-left: 0;
     margin-right: auto;
   }
-  /* input‐bar bumped 20px up from the bottom */
+  /* input-bar bumped 20px up from the bottom */
   .input-bar {
     position: fixed;
-    bottom: 20px;  /* ← was 0 */
-    left: 0;
-    width: 100%;
-    background-color: white;
-    padding: 10px 20px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
     background-color: transparent !important;
     box-shadow: none;
+    padding: 10px 0;
+  }
+  .input-bar input {
+    width: 100% !important;
+    box-sizing: border-box;
   }
 </style>
 """, unsafe_allow_html=True)
@@ -180,7 +196,16 @@ with chat_area:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 11. Input bar                                                             │
+# │ 11. Render footer disclaimer                                              │
+# └────────────────────────────────────────────────────────────────────────────┘
+st.markdown("""
+<div class="footer">
+  This chatbox is powered by AI for guidance and recommendations. Responses may contain errors. Always verify with an advisor.
+</div>
+""", unsafe_allow_html=True)
+
+# ┌────────────────────────────────────────────────────────────────────────────┐
+# │ 12. Input bar                                                             │
 # └────────────────────────────────────────────────────────────────────────────┘
 with st.container():
     st.markdown('<div class="input-bar">', unsafe_allow_html=True)
