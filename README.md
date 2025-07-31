@@ -10,6 +10,24 @@ A Streamlit-based AI chatbot that helps Cal Poly students with math placement qu
 - **Citation System**: Shows sources for policy-related information
 - **Real-time Chat Interface**: Modern chat UI with message history
 
+## Architecture
+
+This project is designed for **team collaboration** with separated concerns:
+
+### **Backend Developer** (`backend.py`)
+- AWS Bedrock integration
+- Student data processing
+- Business logic
+- AI prompt engineering
+- Data validation
+
+### **UI Developer** (`ui.py`)
+- Streamlit interface
+- User experience
+- Styling and animations
+- Chat interface
+- Visual design
+
 ## Setup
 
 ### Prerequisites
@@ -42,7 +60,7 @@ A Streamlit-based AI chatbot that helps Cal Poly students with math placement qu
 
 4. **Run the application**
    ```bash
-   streamlit run app.py
+   streamlit run ui.py
    ```
 
 ## Usage
@@ -61,26 +79,53 @@ Use these test emails to try the system:
 
 ```
 math-path-ai/
-├── app.py                 # Main Streamlit application
-├── chatbot.py            # AWS Bedrock integration
-├── ui.py                 # Alternative UI implementation
+├── ui.py                 # Main Streamlit UI (UI Developer)
+├── backend.py            # Business logic & AWS integration (Backend Developer)
 ├── mock_students.json    # Mock student database
 ├── requirements.txt      # Python dependencies
 ├── .env.example         # Environment variables template
 └── README.md           # This file
 ```
 
-## Architecture
+## Development Workflow
 
-- **Frontend**: Streamlit web interface
-- **Backend**: AWS Bedrock Agent Runtime
-- **Data**: Mock student database (JSON)
-- **AI**: Knowledge Base + Student Context
+### For Backend Developer:
+- Work on `backend.py`
+- Add new AI features
+- Improve data processing
+- Test with `python -c "from backend import *; print('Backend working!')"`
+
+### For UI Developer:
+- Work on `ui.py`
+- Improve user experience
+- Add new UI components
+- Test with `streamlit run ui.py`
+
+### Collaboration:
+- Backend developer exposes new functions in `backend.py`
+- UI developer imports and uses them in `ui.py`
+- Clear separation of concerns
+
+## API Reference (Backend Functions)
+
+### Core Functions:
+- `load_students()` - Load student database
+- `validate_environment()` - Check environment variables
+- `authenticate_student(email, db)` - Authenticate student
+- `process_user_question(student, question)` - Main processing function
+
+### Data Processing:
+- `derive_flags(student)` - Extract student status flags
+- `compose_full_prompt(student, question)` - Create AI prompts
+
+### AWS Integration:
+- `get_bedrock_client()` - Create AWS client
+- `ask_bedrock(prompt)` - Make Bedrock API calls
 
 ## Contributing
 
 1. Create a feature branch
-2. Make your changes
+2. Work on your respective files (backend.py or ui.py)
 3. Test thoroughly
 4. Submit a pull request
 
