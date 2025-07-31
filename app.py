@@ -4,35 +4,27 @@ from anthropic import Client
 from dotenv import load_dotenv
 import base64
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 1. Helper: Load logo.png as base64                                       │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Helper: Load logo.png as base64                                       
 def img_to_base64(path: str) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
 logo_b64 = img_to_base64("calpoly-logo.png")
 
-
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 2. Load API key & init Anthropic                                         │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Load API key & init Anthropic                                         
 load_dotenv()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 anthropic = Client(api_key=ANTHROPIC_API_KEY)
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 3. Streamlit page config                                                 │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Streamlit page config                                                 
 st.set_page_config(
     page_title="MathPath AI",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 4. Custom CSS (banner + title + background + padding + input-bar offset) │
-# └────────────────────────────────────────────────────────────────────────────┘
+
+# Custom CSS (banner + title + background + padding + chat bubbles)     
 st.markdown("""
 <style>
   /* push main content below banner */
@@ -43,7 +35,7 @@ st.markdown("""
   /* absolutely center title */
   .page-title {
     position: absolute;
-    top: 40%;              /* tweak this % to taste */
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 60%;
@@ -58,7 +50,7 @@ st.markdown("""
   /* absolutely center input bar just below title */
   .input-bar {
     position: absolute;
-    top:  Fifty%;          /* about 10% below the title above */
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 60%;
@@ -72,8 +64,38 @@ st.markdown("""
     box-sizing: border-box;
   }
 
-  /* chat scroll area (if you use it) */
-  .chat-container { … }
+  /* chat scroll area with flex layout */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 100px;
+  }
+
+  /* base bubble styling */
+  .chat-message {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    line-height: 1.4;
+  }
+
+  /* user bubble (green, right-aligned) */
+  .chat-message.user {
+    background-color: #dcf8c6;
+    color: #000;
+    align-self: flex-end;
+  }
+
+  /* assistant bubble (gray, left-aligned) */
+  .chat-message.assistant {
+    background-color: #f1f0f0;
+    color: #000;
+    align-self: flex-start;
+  }
 
   /* keep footer stuck to the bottom */
   .footer {
@@ -89,38 +111,32 @@ st.markdown("""
   }
 
   /* background */
-  body, .stApp { background-color: #154734 !important; }
+  body, .stApp {
+    background-color: #154734 !important;
+  }
 </style>
-
 """, unsafe_allow_html=True)
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 5. Render the fixed banner (logo only)                                     │
-# └────────────────────────────────────────────────────────────────────────────┘
+
+# Render the fixed banner (logo only)                                     
 st.markdown(f"""
 <div class="banner">
   <img src="data:image/png;base64,{logo_b64}" alt="Logo">
 </div>
 """, unsafe_allow_html=True)
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 6. Render the title underneath the banner                                  │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Render the title underneath the banner                                  
 st.markdown("""
 <div class="page-title">
   MathPath AI
 </div>
 """, unsafe_allow_html=True)
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 7. Initialize chat history                                                │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Initialize chat history                                                
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 8. Claude helper                                                          │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Claude helper                                                          
 def get_claude_response(prompt: str) -> str:
     completion = anthropic.completions.create(
         model="claude-3",
@@ -133,9 +149,8 @@ def get_claude_response(prompt: str) -> str:
     )
     return completion.completion.strip()
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 9. Handle submissions                                                     │
-# └────────────────────────────────────────────────────────────────────────────┘
+
+# Handle submissions                                                     
 def handle_submit():
     user_text = st.session_state.user_input.strip()
     if not user_text:
@@ -151,9 +166,8 @@ def handle_submit():
     ai_reply = get_claude_response(prompt)
     st.session_state.messages.append({"role": "assistant", "content": ai_reply})
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 10. Display chat                                                           │
-# └────────────────────────────────────────────────────────────────────────────┘
+
+# Display chat                                                           
 chat_area = st.container()
 with chat_area:
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -163,18 +177,15 @@ with chat_area:
         st.markdown(bubble, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 11. Render footer disclaimer                                              │
-# └────────────────────────────────────────────────────────────────────────────┘
+
+# Render footer disclaimer                                              
 st.markdown("""
 <div class="footer">
-  This chatbox is powered by AI for guidance and recommendations. Responses may contain errors. Always verify with an advisor.
+  This chatbox is powered by AI for guidance and recommendations. Responses may contain errors, so always verify with an advisor.
 </div>
 """, unsafe_allow_html=True)
 
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ 12. Input bar                                                             │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Input bar                                                             
 with st.container():
     st.markdown('<div class="input-bar">', unsafe_allow_html=True)
     st.text_input(
