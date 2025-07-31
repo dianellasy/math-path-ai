@@ -1,6 +1,5 @@
 import os
 import streamlit as st
-from anthropic import Client
 from dotenv import load_dotenv
 import base64
 
@@ -10,11 +9,6 @@ def img_to_base64(path: str) -> str:
         return base64.b64encode(f.read()).decode()
 
 logo_b64 = img_to_base64("calpoly-logo.png")
-
-# Load API key & init Anthropic                                         
-load_dotenv()
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-anthropic = Client(api_key=ANTHROPIC_API_KEY)
 
 # Streamlit page config                                                 
 st.set_page_config(
