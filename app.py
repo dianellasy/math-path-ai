@@ -35,31 +35,17 @@ st.set_page_config(
 # └────────────────────────────────────────────────────────────────────────────┘
 st.markdown("""
 <style>
-  /* push main content below the fixed banner */
+  /* push main content below banner */
   .appview-container .main {
     padding-top: 80px;
   }
 
-  /* fixed banner (logo only) */
-  .banner {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 80px;
-    background-color: #8EAB9D;
-    display: flex; align-items: center;
-    padding: 0 20px; box-sizing: border-box;
-    z-index: 1000;
-  }
-  .banner img {
-    height: 60px;
-    margin-right: 20px;
-  }
-
-  /* page title fixed above the input bar, centered */
+  /* absolutely center title */
   .page-title {
-    position: fixed;
-    bottom: 500px;           /* 60px bar height + 20px offset + 10px gap */
+    position: absolute;
+    top: 40%;              /* tweak this % to taste */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     width: 60%;
     text-align: center;
     color: white;
@@ -69,10 +55,30 @@ st.markdown("""
     z-index: 1001;
   }
 
-  /* footer text fixed above the input bar */
+  /* absolutely center input bar just below title */
+  .input-bar {
+    position: absolute;
+    top:  Fifty%;          /* about 10% below the title above */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    padding: 10px 0 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    z-index: 1001;
+  }
+  .input-bar input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* chat scroll area (if you use it) */
+  .chat-container { … }
+
+  /* keep footer stuck to the bottom */
   .footer {
     position: fixed;
-    bottom: 60px;           /* 20px bar offset + ~40px footer height */
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     width: 80%;
@@ -82,48 +88,10 @@ st.markdown("""
     z-index: 1001;
   }
 
-  /* global background */
-  body, .stApp {
-    background-color: #154734 !important;
-  }
-
-  /* chat + input styling */
-  .chat-container {
-    padding-bottom: 80px;
-  }
-  .chat-message {
-    padding: 12px;
-    border-radius: 15px;
-    max-width: 70%;
-    margin: 8px 0;
-    word-wrap: break-word;
-  }
-  .user {
-    background-color: #498555;
-    margin-left: auto;
-    margin-right: 0;
-  }
-  .assistant {
-    background-color: #F0F0F0;
-    margin-left: 0;
-    margin-right: auto;
-  }
-  /* input-bar bumped 20px up from the bottom */
-  .input-bar {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    background-color: transparent !important;
-    box-shadow: none;
-    padding: 10px 0;
-  }
-  .input-bar input {
-    width: 100% !important;
-    box-sizing: border-box;
-  }
+  /* background */
+  body, .stApp { background-color: #154734 !important; }
 </style>
+
 """, unsafe_allow_html=True)
 
 # ┌────────────────────────────────────────────────────────────────────────────┐
