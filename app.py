@@ -2,6 +2,27 @@ import os
 import streamlit as st
 from anthropic import Client
 from dotenv import load_dotenv
+import base64
+
+
+def set_bg_local(image_path):
+    with open(image_path, "rb") as img_file:
+        b64 = base64.b64encode(img_file.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{b64}");
+            background-size: cover;
+            background-position: center;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+set_bg_local("background.jpg")
+
 
 # 1. Load API key
 load_dotenv()
