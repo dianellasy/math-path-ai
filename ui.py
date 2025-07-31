@@ -21,11 +21,36 @@ st.markdown("""
   .input-bar { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);
     width: 60%; z-index: 1001; }
   .input-bar input { width: 100% !important; }
-  .chat-container { display: flex; flex-direction: column; gap: 8px; padding: 12px;
-    max-height: 60vh; overflow-y: auto; margin-bottom: 100px; }
-  .chat-message { max-width: 70%; padding: 10px 14px; border-radius: 16px; line-height: 1.4; }
-  .chat-message.user { background-color: #dcf8c6; align-self: flex-end; }
-  .chat-message.assistant { background-color: #f1f0f0; align-self: flex-start; }
+  .chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* increased spacing between messages */
+  padding: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 100px;
+}
+
+.chat-message {
+  max-width: 60%; /* slightly narrower bubble to prevent overlap */
+  padding: 10px 14px;
+  border-radius: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  margin-left: auto; /* ensures user bubbles shift to the right cleanly */
+}
+
+.chat-message.user {
+  background-color: #dcf8c6;
+  margin-left: auto;
+}
+
+.chat-message.assistant {
+  background-color: #f1f0f0;
+  margin-right: auto;
+}
+
   .footer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
     width: 80%; text-align: center; color: #DDDDDD; font-size: 0.8rem; z-index: 1001; }
   body, .stApp { background-color: #154734 !important; }
