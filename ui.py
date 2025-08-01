@@ -2,7 +2,6 @@ import os
 import re
 import time
 import base64
-import uuid
 import streamlit as st
 
 from backend import (
@@ -18,42 +17,36 @@ from backend import (
 st.set_page_config(page_title="MathPath AI", layout="centered")
 
 # -----------------------------------------------------------------------------
-# 2) CSS tweaks: banner, chat, header, footer + input container styling
+# 2) CSS tweaks: banner, chat, header, footer + input styling
 # -----------------------------------------------------------------------------
 st.markdown("""
 <style>
   /* push content below fixed banner */
-  div[data-testid="stAppViewContainer"] {
-    padding-top: 80px !important;
-  }
+  div[data-testid="stAppViewContainer"] { padding-top: 80px !important; }
 
   /* fixed top banner */
   .banner {
     position: fixed; top: 0; left: 0; right: 0;
     background-color: #154734;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 20px; z-index: 9999; box-sizing: border-box;
+    padding: 8px 20px; z-index: 9999;
   }
-  .banner img { height: 40px; width: auto; }
-  .banner .user-name {
-    color: #fff; font-size: 1.2rem; font-weight: 500;
-  }
+  .banner img { height: 40px; }
+  .banner .user-name { color: #fff; font-size: 1.2rem; font-weight: 500; }
 
   /* header */
   .header-container {
-    width: 100%; max-width: 700px; margin: 1.5rem auto; text-align: center;
+    max-width: 700px; margin: 1.5rem auto; text-align: center;
   }
-  .header-container h1 { font-size: 2.5rem; margin: .25rem 0; }
-  .header-container p { font-size: 1rem; margin: .25rem 0; }
+  .header-container h1 { font-size: 2.5rem; margin: 0.25rem 0; }
+  .header-container p { font-size: 1rem; margin: 0.25rem 0; }
 
   /* chat area */
   .chat-container {
     display: flex; flex-direction: column; gap: 24px;
-    padding: 12px; 
-    /* fill space between banner, input and footer */
+    padding: 12px;
     max-height: calc(100vh - 80px /*banner*/ - 60px /*input*/ - 40px /*footer*/);
-    overflow-y: auto;
-    margin: 0 auto;
+    overflow-y: auto; margin: 0 auto;
     max-width: 800px; width: 100%;
   }
 
@@ -67,23 +60,34 @@ st.markdown("""
   .chat-message.user { background: #A8CCBA; margin-left: auto; }
   .chat-message.assistant { background: #f1f0f0; margin-right: auto; }
 
+  /* searching animation */
+  @keyframes dots {
+    0%,25%   { content: ""; }
+    50%      { content: "."; }
+    75%      { content: ".."; }
+    100%     { content: "..."; }
+  }
+  .chat-message.searching {
+    position: relative; font-style: italic; color: #555;
+  }
+  .chat-message.searching::before {
+    content: "Searching for information";
+  }
+  .chat-message.searching::after {
+    content: "";
+    animation: dots 1s steps(4,end) infinite;
+    margin-left: 4px;
+  }
+
   /* input container pinned above footer */
   .input-container {
-    position: fixed;
-    bottom: 40px; /* same as footer height */
-    left: 0; right: 0;
-    max-width: 800px; margin: 0 auto;
-    padding: 8px 12px;
-    background-color: #ffffff;
-    z-index: 1002;
-    box-sizing: border-box;
+    position: fixed; bottom: 40px; left: 0; right: 0;
+    max-width: 800px; margin: 0 auto; padding: 8px 12px;
+    background-color: #fff; z-index: 1002;
   }
   .input-container .stTextInput>div>div>input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    width: 100%; padding: 0.75rem 1rem;
+    font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;
   }
 
   /* sticky footer */
@@ -97,14 +101,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 3) Helper: inline‐embed PNGs as Base64
+# 3) Helper: embed PNGs as Base64 for the logo
 # -----------------------------------------------------------------------------
 def img_to_base64(path: str) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
 # -----------------------------------------------------------------------------
-# 4) Validate environment and load student DB
+# 4) Load & validate
 # -----------------------------------------------------------------------------
 try:
     validate_environment()
@@ -114,38 +118,34 @@ except Exception as e:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 5) Initialize session state
+# 5) Session‐state init
 # -----------------------------------------------------------------------------
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "typing" not in st.session_state:
-    st.session_state.typing = False
+if "show_searching" not in st.session_state:
+    st.session_state.show_searching = False
+if "last_input" not in st.session_state:
+    st.session_state.last_input = ""
 
 # -----------------------------------------------------------------------------
-# 6) Load and inline‐embed the Cal Poly logo
+# 6) Prepare logo HTML
 # -----------------------------------------------------------------------------
-logo_path = "calpoly-logo.png"
 logo_html = ""
-if os.path.exists(logo_path):
-    b64 = img_to_base64(logo_path)
+if os.path.exists("calpoly-logo.png"):
+    b64 = img_to_base64("calpoly-logo.png")
     logo_html = f'<img src="data:image/png;base64,{b64}" alt="Cal Poly Logo" />'
 
 # -----------------------------------------------------------------------------
-# 7) Fixed banner (logo only)
+# 7) Top banner (pre‐login)
 # -----------------------------------------------------------------------------
-st.markdown(f"""
-<div class="banner">
-  {logo_html}
-</div>
-""", unsafe_allow_html=True)
+st.markdown(f'<div class="banner">{logo_html}</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 8) Welcome page: centered card with email input
+# 8) Welcome flow
 # -----------------------------------------------------------------------------
 if "student_email" not in st.session_state:
     st.markdown('<div class="welcome-container">', unsafe_allow_html=True)
     st.markdown('<div class="welcome-card">', unsafe_allow_html=True)
-
     if logo_html:
         st.markdown(logo_html, unsafe_allow_html=True)
     st.markdown('<h2>Welcome to MathPath AI</h2>', unsafe_allow_html=True)
@@ -153,14 +153,11 @@ if "student_email" not in st.session_state:
         '<p>Your personal guide through Cal Poly’s math placement process.</p>',
         unsafe_allow_html=True
     )
-
     with st.form("email_form"):
         email_in = st.text_input("", placeholder="you@calpoly.edu")
-        submitted = st.form_submit_button("Continue")
-        if submitted and email_in:
+        if st.form_submit_button("Continue") and email_in:
             st.session_state.student_email = email_in.strip().lower()
             st.stop()
-
     st.markdown('</div></div>', unsafe_allow_html=True)
     st.stop()
 
@@ -174,7 +171,7 @@ if error:
     with st.expander("Available test emails"):
         st.json(list(STUDENT_DB.keys()))
     if st.button("Use a different email"):
-        del st.session_state["student_email"]
+        del st.session_state.student_email
         st.stop()
     st.stop()
 
@@ -182,7 +179,7 @@ first = student["person"].get("first_name", "")
 last  = student["person"].get("last_name", "")
 
 # -----------------------------------------------------------------------------
-# 10) Post-auth banner (logo + student name)
+# 10) Post‐auth banner (logo + name)
 # -----------------------------------------------------------------------------
 st.markdown(f"""
 <div class="banner">
@@ -192,7 +189,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 11) Header + Chat UI + Footer
+# 11) Header
 # -----------------------------------------------------------------------------
 st.markdown("""
 <div class="header-container">
@@ -201,72 +198,81 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-def handle_submit(input_key):
-    text = st.session_state.get(input_key, "").strip()
+# -----------------------------------------------------------------------------
+# 12) Chat container + dynamic placeholder
+# -----------------------------------------------------------------------------
+def clean(text: str) -> str:
+    return re.sub(r'<Image\b[^>]*?\/>', '', text).strip()
+
+chat_container = st.container()
+with chat_container:
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
+    # render all stored messages
+    for msg in st.session_state.messages:
+        c   = clean(msg["content"])
+        cls = "user" if msg["role"] == "user" else "assistant"
+        st.markdown(f'<div class="chat-message {cls}">{c}</div>', unsafe_allow_html=True)
+
+    # if we need to show the searching bubble, reserve a placeholder
+    search_ph = None
+    if st.session_state.show_searching:
+        search_ph = st.empty()
+        search_ph.markdown(
+            '<div class="chat-message assistant searching"></div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
+# 13) Input box (pinned)
+# -----------------------------------------------------------------------------
+def on_submit():
+    text = st.session_state.user_input.strip()
     if not text:
         return
+    st.session_state.last_input     = text
+    st.session_state.show_searching = True
     st.session_state.messages.append({"role": "user", "content": text})
-    st.session_state.pop(input_key, None)
-    with st.spinner("Thinking..."):
-        reply = process_user_question(student, text)
-    st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.session_state.typing = True
+    st.session_state.user_input = ""
 
-def clean(text: str) -> str:
-    return re.sub(r'<Image[^>]*\/>', '', text).strip()
-
-with st.container():
-    # Chat messages
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    msgs = st.session_state.messages
-
-    if st.session_state.typing and msgs:
-        for msg in msgs[:-1]:
-            c   = clean(msg["content"])
-            cls = "user" if msg["role"] == "user" else "assistant"
-            if c:
-                st.markdown(f'<div class="chat-message {cls}">{c}</div>',
-                            unsafe_allow_html=True)
-
-        placeholder = st.empty()
-        full_text = clean(msgs[-1]["content"])
-        built = ""
-        for ch in full_text:
-            built += ch
-            placeholder.markdown(
-                f'<div class="chat-message assistant">{built}</div>',
-                unsafe_allow_html=True
-            )
-            time.sleep(0.01)
-        st.session_state.typing = False
-
-    else:
-        for msg in msgs:
-            c   = clean(msg["content"])
-            cls = "user" if msg["role"] == "user" else "assistant"
-            if c:
-                st.markdown(f'<div class="chat-message {cls}">{c}</div>',
-                            unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)  # close chat-container
-
-# -----------------------------------------------------------------------------
-# 12) Fixed-position input box
-# -----------------------------------------------------------------------------
 st.markdown('<div class="input-container">', unsafe_allow_html=True)
-input_key = f"user_input_{len(st.session_state.messages)}"
 st.text_input(
     label="Ask a question",
-    key=input_key,
+    key="user_input",
     placeholder="Type here…",
-    on_change=handle_submit,
-    args=(input_key,),
+    on_change=on_submit,
     label_visibility="hidden"
 )
 st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 13) Footer
+# 14) If flagged, do the slow call and replace placeholder with typing effect
+# -----------------------------------------------------------------------------
+if st.session_state.show_searching and search_ph is not None:
+    # fetch full reply
+    full_reply = process_user_question(student, st.session_state.last_input)
+
+    # clear the “Searching…” bubble
+    search_ph.empty()
+
+    # type out the reply character by character
+    typed = ""
+    for char in full_reply:
+        typed += char
+        search_ph.markdown(
+            f'<div class="chat-message assistant">{typed}</div>',
+            unsafe_allow_html=True
+        )
+        time.sleep(0.02)  # adjust typing speed here
+
+    # persist and reset
+    st.session_state.messages.append({"role": "assistant", "content": full_reply})
+    st.session_state.show_searching = False
+
+# -----------------------------------------------------------------------------
+# 15) Footer
 # -----------------------------------------------------------------------------
 st.markdown("""
 <div class="footer">
