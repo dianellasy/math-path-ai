@@ -130,35 +130,22 @@ def compose_full_prompt(student: dict, user_question: str):
         "Prefer exact data from the student record over assumptions. Cite sources only for policy content from the KB."
     )
     
-    student_json = json.dumps(student, indent=2, ensure_ascii=False)
+     student_json = json.dumps(student, indent=2, ensure_ascii=False)
     flags_text = (
-        f"STUDENT RECORD SUMMARY:\n"
-        f"  Name: {flags['name']}\n"
+        f"Derived Summary:\n"
         f"  Program: {flags['program']}\n"
-        f"  Plan: {flags['plan']}\n"
-        f"  Status: {flags['status']}\n"
         f"  SAT Received: {flags['sat_received']}\n"
         f"  AP Scores Received: {flags['ap_received']}\n"
         f"  Transcript Received: {flags['transcript_received']}\n"
-        f"  MAPE Status: {flags['mape_status']}\n\n"
-        
-        f"FULL STUDENT RECORD (JSON):\n{student_json}\n\n"
-        
-        f"STUDENT QUESTION:\n{user_question}\n\n"
-        
-        f"INSTRUCTIONS:\n"
-        f"- Answer clearly and professionally using the student record data above.\n"
-        f"- For personal status questions, rely on the exact data from the student record.\n"
-        f"- For policy questions, use the Knowledge Base and cite sources.\n"
-        f"- Always maintain the MathPath AI character and tone.\n"
-        f"- Include appropriate citations for factual information.\n"
-        f"- End with a helpful closing statement."
+        f"  MAPE Status: {flags['mape_status']}\n"
     )
-    
-    return f"{system_rules}\n\n{flags_text}"
-
-# -----------------------------
-# Bedrock KB call
+    return (
+        f"{system_rules}\n\n"
+        f"Full Student Record (JSON):\n{student_json}\n\n"
+        f"{flags_text}\n"
+        f"Student Question:\n{user_question}\n\n"
+        f"Answer clearly. For personal status, rely on the record above. For policy, use the KB and cite sources and give answers pointwise and to the point not too long."
+    )
 # -----------------------------
 def ask_bedrock(prompt: str):
     """Make a call to AWS Bedrock with the given prompt."""

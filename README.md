@@ -12,8 +12,6 @@ A Streamlit-based AI chatbot that helps Cal Poly students with math placement qu
 
 ## Architecture
 
-This project is designed for **team collaboration** with separated concerns:
-
 ### **Backend Developer** (`backend.py`)
 - AWS Bedrock integration
 - Student data processing
@@ -51,7 +49,7 @@ This project is designed for **team collaboration** with separated concerns:
 3. **Configure environment variables**
    Create a `.env` file with:
    ```
-   AWS_DEFAULT_REGION=us-west-2
+   AWS_DEFAULT_REGION=your_region_here
    AWS_ACCESS_KEY_ID=your_access_key_here
    AWS_SECRET_ACCESS_KEY=your_secret_key_here
    KNOWLEDGE_BASE_ID=kb-xxxxxxxx
