@@ -121,14 +121,16 @@ def derive_flags(student: dict):
 def compose_full_prompt(student: dict, user_question: str):
     """Compose a single prompt that sends FULL student record to Bedrock."""
     flags = derive_flags(student)
-    # Minimal, clear instructions. Adjust to your mentor's guidance as needed.
+    
+    # Comprehensive system rules for MathPath AI
     system_rules = (
         "You are MathPath AI for Cal Poly math placement.\n"
         "Use the FULL student record below to answer personal status questions (SAT/AP/transcript/MAPE).\n"
         "Also use the Knowledge Base for official policy/FAQ. If the KB lacks a policy, say you don't know.\n"
         "Prefer exact data from the student record over assumptions. Cite sources only for policy content from the KB."
     )
-    student_json = json.dumps(student, indent=2, ensure_ascii=False)
+    
+     student_json = json.dumps(student, indent=2, ensure_ascii=False)
     flags_text = (
         f"Derived Summary:\n"
         f"  Program: {flags['program']}\n"
@@ -142,11 +144,8 @@ def compose_full_prompt(student: dict, user_question: str):
         f"Full Student Record (JSON):\n{student_json}\n\n"
         f"{flags_text}\n"
         f"Student Question:\n{user_question}\n\n"
-        f"Answer clearly. For personal status, rely on the record above. For policy, use the KB and cite sources."
+        f"Answer clearly. For personal status, rely on the record above. For policy, use the KB and cite sources and give answers pointwise and to the point not too long."
     )
-
-# -----------------------------
-# Bedrock KB call
 # -----------------------------
 def ask_bedrock(prompt: str):
     """Make a call to AWS Bedrock with the given prompt."""
