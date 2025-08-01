@@ -126,7 +126,3 @@ math-path-ai/
 2. Work on your respective files (backend.py or ui.py)
 3. Test thoroughly
 4. Submit a pull request
-
-## License
-
-[Add your license information here]
