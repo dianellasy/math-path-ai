@@ -142,11 +142,8 @@ def compose_full_prompt(student: dict, user_question: str):
         f"Full Student Record (JSON):\n{student_json}\n\n"
         f"{flags_text}\n"
         f"Student Question:\n{user_question}\n\n"
-        f"Answer clearly. For personal status, rely on the record above. For policy, use the KB and cite sources."
+        f"Answer clearly. For personal status, rely on the record above. For policy, use the KB and cite sources and give answers pointwise and to the point not too long."
     )
-
-# -----------------------------
-# Bedrock KB call
 # -----------------------------
 def ask_bedrock(prompt: str):
     """Make a call to AWS Bedrock with the given prompt."""
