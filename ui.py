@@ -38,8 +38,8 @@ st.markdown("""
   .header-container {
     max-width: 700px; margin: 1.5rem auto; text-align: center;
   }
-  .header-container h1 { font-size: 2.5rem; margin: 0.25rem 0; }
-  .header-container p { font-size: 1rem; margin: 0.25rem 0; }
+  .header-container h1 { font-size: 3.5rem; margin: 0.25rem 0; }
+  .header-container p { font-size: 1.5rem; margin: 0.25rem 0; }
 
   /* chat area */
   .chat-container {

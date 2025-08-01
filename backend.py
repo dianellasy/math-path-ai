@@ -130,7 +130,7 @@ def compose_full_prompt(student: dict, user_question: str):
         "Prefer exact data from the student record over assumptions. Cite sources only for policy content from the KB."
     )
     
-     student_json = json.dumps(student, indent=2, ensure_ascii=False)
+    student_json = json.dumps(student, indent=2, ensure_ascii=False)
     flags_text = (
         f"Derived Summary:\n"
         f"  Program: {flags['program']}\n"
