@@ -125,6 +125,7 @@ def compose_full_prompt(student: dict, user_question: str):
     # Comprehensive system rules for MathPath AI
     system_rules = (
         "You are MathPath AI for Cal Poly math placement.\n"
+        "Also, answer gritting and polite to the user's question."
         "Use the FULL student record below to answer personal status questions (SAT/AP/transcript/MAPE).\n"
         "Also use the Knowledge Base for official policy/FAQ. If the KB lacks a policy, say you don't know.\n"
         "Prefer exact data from the student record over assumptions. Cite sources only for policy content from the KB."
@@ -162,6 +163,9 @@ def ask_bedrock(prompt: str):
     )
     answer = (resp.get("output", {}) or {}).get("text", "") or "(No answer)"
     citations = []
+    
+
+    # Add citations from Bedrock response
     for c in resp.get("citations", []) or []:
         for ref in c.get("retrievedReferences", []) or []:
             loc = (ref.get("location", {}) or {}).get("s3Location", {}) or {}
