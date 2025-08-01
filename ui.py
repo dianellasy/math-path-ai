@@ -11,6 +11,11 @@ from backend import (
     process_user_question,
 )
 
+st.set_page_config(
+  page_title="MathPath AI",
+  page_icon="my_custom_icon.png"   # can be a local .png/.ico or an external URL
+)
+
 # -----------------------------------------------------------------------------
 # 1) Page config
 # -----------------------------------------------------------------------------
