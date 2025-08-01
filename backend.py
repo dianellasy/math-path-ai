@@ -125,13 +125,13 @@ def compose_full_prompt(student: dict, user_question: str):
     # Comprehensive system rules for MathPath AI
     system_rules = (
         "You are MathPath AI for Cal Poly math placement.\n"
-        "Also, answer gritting and polite to the user's question."
+        "Also, answer gritting and polite to the user's question.\n"
         "Use the FULL student record below to answer personal status questions (SAT/AP/transcript/MAPE).\n"
         "Also use the Knowledge Base for official policy/FAQ. If the KB lacks a policy, say you don't know.\n"
         "Prefer exact data from the student record over assumptions. Cite sources only for policy content from the KB."
     )
     
-     student_json = json.dumps(student, indent=2, ensure_ascii=False)
+    student_json = json.dumps(student, indent=2, ensure_ascii=False)
     flags_text = (
         f"Derived Summary:\n"
         f"  Program: {flags['program']}\n"
