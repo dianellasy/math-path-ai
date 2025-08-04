@@ -81,8 +81,8 @@ math-path-ai/
 ├── backend.py            # Business logic & AWS integration (Backend Developer)
 ├── mock_students.json    # Mock student database
 ├── requirements.txt      # Python dependencies
-├── .env.example         # Environment variables template
-└── README.md           # This file
+├── .env.example          # Environment variables template
+└── README.md             # This file
 ```
 
 ## Development Workflow
