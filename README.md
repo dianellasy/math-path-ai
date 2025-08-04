@@ -10,17 +10,21 @@ With 5,500 incoming students at Cal Poly SLO, students must be placed in a colle
 ---
 
 ## 📚 Table of Contents
-1. [Features](#features)
-2. [Architecture](#architecture)
-3. [Setup Instructions](#setup-instructions)
-4. [AWS Configuration](#aws-configuration)
-5. [Testing & Running](#testing--running)
-6. [Troubleshooting](#troubleshooting)
-7. [Project Structure](#project-structure)
-8. [Development Workflow](#development-workflow)
-9. [Backend API Reference](#backend-api-reference)
-10. [Contributing](#contributing)
-11. [Support](#support)
+1. [Features](#-features)
+2. [Architecture](#-architecture)
+3. [Setup Instructions](#-setup-instructions)
+   - [Technologies Used](#-technologies-used)
+   - [Prerequisites](#-prerequisites)
+   - [Installation](#-installation)
+4. [AWS Configuration](#-aws-configuration)
+5. [Testing & Running](#-testing--running)
+6. [Troubleshooting](#-troubleshooting)
+7. [Project Structure](#-project-structure)
+8. [Development Workflow](#-development-workflow)
+9. [Backend API Reference](#-backend-api-reference)
+10. [Contributing](#-contributing)
+11. [Support](#-support)
+
 
 ---
 
