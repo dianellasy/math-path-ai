@@ -16,15 +16,8 @@ With 5,500 incoming students at Cal Poly SLO, students must be placed in a colle
    - [Technologies Used](#-technologies-used)
    - [Prerequisites](#-prerequisites)
    - [Installation](#-installation)
-4. [AWS Configuration](#-aws-configuration)
-5. [Testing & Running](#-testing--running)
-6. [Troubleshooting](#-troubleshooting)
-7. [Project Structure](#-project-structure)
-8. [Development Workflow](#-development-workflow)
-9. [Backend API Reference](#-backend-api-reference)
-10. [Contributing](#-contributing)
-11. [Support](#-support)
-
+4. [Usage](#usage)
+   - [Test Emails](#test-emails)
 
 ---
 
@@ -86,4 +79,18 @@ venv\Scripts\activate           # Windows
 # Upgrade pip and install dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
+```
+
+
+## Usage
+
+1. **Sign In**: Enter your Cal Poly email address
+2. **Ask Questions**: Ask about your math placement status, requirements, or policies
+3. **Get Personalized Answers**: The AI uses your student record to provide relevant information
+
+### Test Emails
+Use these test emails to try the system:
+- `alex.martinez@example.com`
+- `jordan.lee@example.com`
+- `nina.wu@example.com`
 
